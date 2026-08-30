@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CiaForge</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header><div class="brand"><img class="mark" src="/icon.png" alt="" /><h1>CiaForge</h1></div><button id="open-settings" class="icon-button" type="button" aria-label="Open settings"><i class="ph ph-gear-six" aria-hidden="true"></i></button></header>
+      <section id="drop-zone" class="drop-zone" aria-label="Add CCI or 3DS files" tabindex="0">
+        <img class="drop-mark" src="/icon.png" alt="" />
+        <strong>Drop .cci or .3ds files here</strong>
+        <small id="drop-hint">or click anywhere to browse</small>
+      </section>
+      <section id="batch-workspace" class="batch-workspace" aria-live="polite">
+        <div class="batch-heading"><strong id="summary">0 files selected</strong><button id="add-more" class="secondary" type="button"><i class="ph ph-plus-circle" aria-hidden="true"></i>Add more files</button></div>
+        <div class="queue-panel"><div id="queue" class="queue"></div></div>
+        <button id="clear-batch" class="clear-batch" type="button">Clear batch</button>
+        <div class="convert-bar"><button id="convert" class="primary" disabled><i class="ph ph-arrows-clockwise"></i>Convert files</button></div>
+      </section>
+    </main>
+    <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+      <form id="settings-form">
+        <div class="settings-heading"><div><h2 id="settings-title">Settings</h2><p>Choose where converted files are saved and your preferred language.</p></div><button id="close-settings" class="icon-button" type="button" aria-label="Close settings"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+        <div class="settings-section"><label for="language">Language</label><select id="language"><option value="en">English</option><option value="zh-CN">简体中文</option></select></div>
+        <fieldset class="settings-section"><legend>Output location</legend><label><input type="radio" name="output" value="source" checked /> Same folder as source</label><p>Save each .cia next to its source file.</p><label><input type="radio" name="output" value="shared" /> One shared folder</label><div class="folder-picker"><input id="output-path" readonly placeholder="Choose a folder" /><button id="choose-folder" class="secondary" type="button">Choose…</button></div></fieldset>
+        <section class="settings-section about-section" aria-labelledby="about-title"><h3 id="about-title">About</h3><div class="about-row"><span id="about-email-label">Email</span><button id="about-email" class="about-link" type="button">me@knktc.com</button></div><div class="about-row"><span id="about-website-label">Website</span><button id="about-website" class="about-link" type="button">knktc.com</button></div></section>
+      </form>
+    </dialog>
+    <input id="browser-file-input" type="file" accept=".cci,.3ds" multiple hidden />
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

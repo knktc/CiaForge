@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+design-qa.md
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# User-provided images and generated conversion output
+*.3ds
+*.cci
+*.cia
+*.ciaforge-partial
