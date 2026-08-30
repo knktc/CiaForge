@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "CiaForge",
+  "version": "0.1.0",
+  "identifier": "com.knktc.ciaforge",
+  "build": { "beforeDevCommand": "npm run dev", "devUrl": "http://127.0.0.1:1420", "beforeBuildCommand": "npm run build", "frontendDist": "../dist" },
+  "app": { "windows": [{ "title": "CiaForge", "width": 900, "height": 360, "minWidth": 700, "minHeight": 350, "resizable": true }] },
+  "bundle": { "active": true, "targets": "all" }
+}
