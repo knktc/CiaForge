@@ -74,13 +74,12 @@ example, `v0.2.0`). Each run uploads three downloadable artifacts:
 
 - `CiaForge-macOS-arm64` (DMG)
 - `CiaForge-macOS-x86_64` (DMG)
-- `CiaForge-Windows`
+- `CiaForge-Windows` (EXE)
 
 When a version tag is pushed, a separate release job downloads the build
-artifacts and publishes the two macOS DMGs plus the Windows `.exe` and `.msi`
-installers to the matching GitHub Release. The macOS DMGs use an ad-hoc
-signature for bundle integrity, but are not notarized without Apple signing
-secrets.
+artifacts and publishes the two macOS DMGs plus the Windows `.exe` installer to
+the matching GitHub Release. The macOS DMGs use an ad-hoc signature for bundle
+integrity, but are not notarized without Apple signing secrets.
 
 ### Opening the ad-hoc-signed macOS build
 

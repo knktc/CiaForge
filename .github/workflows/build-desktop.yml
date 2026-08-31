@@ -2,6 +2,11 @@ name: Build desktop apps
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing version tag to rebuild and publish, for example v0.2.0
+        required: false
+        type: string
   pull_request:
   push:
     tags:
@@ -36,7 +41,7 @@ jobs:
             os: windows-latest
             target: ''
             build_args: ''
-            bundle_path: src-tauri/target/release/bundle/**
+            bundle_path: src-tauri/target/release/bundle/nsis/*.exe
             artifact: CiaForge-Windows
 
     steps:
@@ -73,9 +78,9 @@ jobs:
           if-no-files-found: error
 
   release:
-    name: Publish macOS DMGs
+    name: Publish Release installers
     needs: build
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && startsWith(inputs.release_tag, 'v'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -90,7 +95,7 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG_NAME: ${{ github.ref_name }}
+          TAG_NAME: ${{ inputs.release_tag || github.ref_name }}
         run: |
           if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "Release $TAG_NAME already exists; uploading assets."
@@ -102,12 +107,12 @@ jobs:
               --generate-notes
           fi
 
-      - name: Upload desktop installers to GitHub Release
+      - name: Upload DMGs and Windows EXE to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG_NAME: ${{ github.ref_name }}
+          TAG_NAME: ${{ inputs.release_tag || github.ref_name }}
         run: |
-          find release-assets -type f \( -name '*.dmg' -o -name '*.exe' -o -name '*.msi' \) -print0 |
+          find release-assets -type f \( -name '*.dmg' -o -name '*.exe' \) -print0 |
             while IFS= read -r -d '' asset; do
               gh release upload "$TAG_NAME" "$asset" \
                 --repo "$GITHUB_REPOSITORY" \
