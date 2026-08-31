@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -66,8 +66,50 @@ jobs:
         run: npm run tauri -- build ${{ matrix.build_args }}
 
       - name: Upload desktop bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.bundle_path }}
           if-no-files-found: error
+
+  release:
+    name: Publish macOS DMGs
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: CiaForge-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG_NAME already exists; uploading assets."
+          else
+            gh release create "$TAG_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --title "CiaForge $TAG_NAME" \
+              --generate-notes
+          fi
+
+      - name: Upload macOS DMGs to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          find release-assets -type f -name '*.dmg' -print0 |
+            while IFS= read -r -d '' asset; do
+              gh release upload "$TAG_NAME" "$asset" \
+                --repo "$GITHUB_REPOSITORY" \
+                --clobber
+            done

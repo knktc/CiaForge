@@ -70,13 +70,15 @@ these generated files are intentionally ignored by Git.
 The workflow at [`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml)
 builds separate macOS arm64 and x86_64 DMGs, plus the existing Windows bundle.
 It runs for pull requests, manual dispatches, and tags beginning with `v` (for
-example, `v0.1.0`). Each run uploads three downloadable artifacts:
+example, `v0.2.0`). Each run uploads three downloadable artifacts:
 
 - `CiaForge-macOS-arm64` (DMG)
 - `CiaForge-macOS-x86_64` (DMG)
 - `CiaForge-Windows`
 
-The workflow does not publish a GitHub Release. The macOS DMGs use an ad-hoc
+When a version tag is pushed, a separate release job downloads the macOS
+artifacts and publishes both DMGs to the matching GitHub Release. The Windows
+bundle remains available as an Actions artifact. The macOS DMGs use an ad-hoc
 signature for bundle integrity, but are not notarized without Apple signing
 secrets.
 
