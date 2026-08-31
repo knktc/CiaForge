@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1320" viewBox="0 0 1320 1320">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1320" height="1320" fill="url(#background)"/>
+  <text x="660" y="368" fill="#172033" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif" font-size="48" font-weight="600" text-anchor="middle">Install CiaForge</text>
+  <text x="660" y="428" fill="#667085" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif" font-size="28" text-anchor="middle">Drag the app to Applications</text>
+
+  <path d="M508 600 H798" fill="none" stroke="#3974e8" stroke-width="10" stroke-linecap="round"/>
+  <path d="M766 566 L814 600 L766 634" fill="none" stroke="#3974e8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <text x="660" y="956" fill="#98a2b3" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif" font-size="24" text-anchor="middle">CiaForge · macOS</text>
+</svg>

@@ -58,29 +58,36 @@ cargo test --manifest-path src-tauri/Cargo.toml
 ### Build a distributable application
 
 ```bash
-npm run tauri build
+CI=false npm run tauri -- build --target aarch64-apple-darwin --bundles dmg
 ```
 
-Tauri writes build artifacts beneath `src-tauri/target/`; they are intentionally
-ignored by Git.
+Use `x86_64-apple-darwin` instead of `aarch64-apple-darwin` for an Intel Mac.
+The DMG is written beneath `src-tauri/target/<target>/release/bundle/dmg/`;
+these generated files are intentionally ignored by Git.
 
 ## GitHub Actions builds
 
 The workflow at [`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml)
-builds macOS and Windows bundles on their respective hosted runners. It runs for
-pull requests, manual dispatches, and tags beginning with `v` (for example,
-`v0.1.0`). Each run uploads two downloadable artifacts:
+builds separate macOS arm64 and x86_64 DMGs, plus the existing Windows bundle.
+It runs for pull requests, manual dispatches, and tags beginning with `v` (for
+example, `v0.1.0`). Each run uploads three downloadable artifacts:
 
-- `CiaForge-macOS`
+- `CiaForge-macOS-arm64` (DMG)
+- `CiaForge-macOS-x86_64` (DMG)
 - `CiaForge-Windows`
 
-The workflow does not publish a GitHub Release or sign/notarize the macOS app.
+The workflow does not publish a GitHub Release. The macOS DMGs use an ad-hoc
+signature for bundle integrity, but are not notarized without Apple signing
+secrets.
 
-### Opening the unsigned macOS build
+### Opening the ad-hoc-signed macOS build
 
-Without an Apple Developer account, macOS builds are unsigned and unnotarized.
-Only use an artifact that you built yourself or obtained from a repository you
-trust. Do **not** disable Gatekeeper system-wide.
+Without an Apple Developer account, macOS builds are ad-hoc signed but
+unnotarized; a quarantined download may therefore still be reported as damaged
+or rejected by Gatekeeper. Only use an artifact that you built yourself or
+obtained from a repository you trust. Do not disable Gatekeeper system-wide. A
+production release that opens normally after download needs a Developer ID
+Application signature and notarization.
 
 After moving `CiaForge.app` to `/Applications`, use either of these per-app
 options:

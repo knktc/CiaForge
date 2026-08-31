@@ -14,15 +14,29 @@ jobs:
   build:
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    env:
+      CI: 'false'
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: macOS
+          - name: macOS arm64
             os: macos-latest
-            artifact: CiaForge-macOS
+            target: aarch64-apple-darwin
+            build_args: --target aarch64-apple-darwin --bundles dmg
+            bundle_path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+            artifact: CiaForge-macOS-arm64
+          - name: macOS x86_64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            build_args: --target x86_64-apple-darwin --bundles dmg
+            bundle_path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+            artifact: CiaForge-macOS-x86_64
           - name: Windows
             os: windows-latest
+            target: ''
+            build_args: ''
+            bundle_path: src-tauri/target/release/bundle/**
             artifact: CiaForge-Windows
 
     steps:
@@ -37,6 +51,8 @@ jobs:
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
       - name: Install frontend dependencies
         run: npm ci
@@ -47,11 +63,11 @@ jobs:
           cargo test --manifest-path src-tauri/Cargo.toml
 
       - name: Build native bundle
-        run: npm run tauri build
+        run: npm run tauri -- build ${{ matrix.build_args }}
 
       - name: Upload desktop bundle
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: src-tauri/target/release/bundle/**
+          path: ${{ matrix.bundle_path }}
           if-no-files-found: error
