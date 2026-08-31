@@ -102,12 +102,12 @@ jobs:
               --generate-notes
           fi
 
-      - name: Upload macOS DMGs to GitHub Release
+      - name: Upload desktop installers to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ github.ref_name }}
         run: |
-          find release-assets -type f -name '*.dmg' -print0 |
+          find release-assets -type f \( -name '*.dmg' -o -name '*.exe' -o -name '*.msi' \) -print0 |
             while IFS= read -r -d '' asset; do
               gh release upload "$TAG_NAME" "$asset" \
                 --repo "$GITHUB_REPOSITORY" \
