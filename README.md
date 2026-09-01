@@ -76,7 +76,6 @@ error messages.
 - Avoid overwrites automatically: `Game.cia`, `Game_1.cia`, `Game_2.cia`, and
   so on.
 - Reveal a successfully converted file in Finder.
-- Switch the interface between English and Simplified Chinese.
 
 ## Current support and limits
 
