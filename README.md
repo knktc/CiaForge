@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/logo-concept-v4-cf.png" alt="CiaForge logo" width="180">
+  <img src="public/icon.png" alt="CiaForge logo" width="180">
 </p>
 
 # CiaForge
