@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/logo-concept-v4-cf.png" alt="CiaForge logo" width="180">
+</p>
+
 # CiaForge
 
 CiaForge is a focused Tauri desktop app for converting supported Nintendo 3DS
@@ -6,6 +10,56 @@ drag-and-drop queue with a Rust conversion engine.
 
 > Use only files you are legally entitled to convert and install. CiaForge does
 > not include game content, keys, or firmware material.
+
+## Usage
+
+### macOS
+
+Because I do not currently have an Apple Developer account, the macOS builds
+are ad-hoc signed and not notarized. macOS may therefore report a downloaded
+app as damaged or reject it through Gatekeeper.
+
+After moving `CiaForge.app` to `/Applications`, open Terminal and run:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/CiaForge.app"
+open "/Applications/CiaForge.app"
+```
+
+These commands remove the download quarantine attribute for CiaForge only and
+open the app. They do not disable Gatekeeper system-wide. Only use an artifact
+that you built yourself or obtained from a repository you trust.
+
+### Convert a file
+
+1. Open CiaForge.
+2. Drag one or more `.cci` / `.3ds` files into the window, or select them with
+   the file browser.
+3. Choose the output location in **Settings** if needed.
+4. Start the conversion and find the generated `.cia` file next to the source
+   file or in the shared output folder.
+
+### Testing status and feedback
+
+I currently have only one Apple Silicon (ARM64) MacBook available. I can test
+the macOS arm64 build, but I cannot currently test the macOS x86_64 or Windows
+builds. If you have an Intel Mac or a Windows PC, please help test them and
+report the operating system version, CPU architecture, app version, and any
+error messages.
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/screenshots_1.png" alt="CiaForge empty state" width="900">
+</p>
+
+<p align="center"><em>Empty state with drag-and-drop import.</em></p>
+
+<p align="center">
+  <img src="docs/screenshots/screenshots_2.png" alt="CiaForge conversion queue" width="900">
+</p>
+
+<p align="center"><em>Conversion queue with multiple files selected.</em></p>
 
 ## Features
 
@@ -81,32 +135,6 @@ artifacts and publishes the two macOS DMGs plus the Windows `.exe` installer to
 the matching GitHub Release. The macOS DMGs use an ad-hoc signature for bundle
 integrity, but are not notarized without Apple signing secrets.
 
-### Opening the ad-hoc-signed macOS build
-
-Without an Apple Developer account, macOS builds are ad-hoc signed but
-unnotarized; a quarantined download may therefore still be reported as damaged
-or rejected by Gatekeeper. Only use an artifact that you built yourself or
-obtained from a repository you trust. Do not disable Gatekeeper system-wide. A
-production release that opens normally after download needs a Developer ID
-Application signature and notarization.
-
-After moving `CiaForge.app` to `/Applications`, use either of these per-app
-options:
-
-1. In Finder, Control-click `CiaForge.app`, choose **Open**, then confirm the
-   dialog; or attempt to open it once and choose **Open Anyway** in **System
-   Settings → Privacy & Security**.
-2. If macOS still keeps the downloaded-file quarantine attribute, remove it for
-   this app only:
-
-   ```bash
-   xattr -dr com.apple.quarantine "/Applications/CiaForge.app"
-   open "/Applications/CiaForge.app"
-   ```
-
-The command removes only CiaForge's download quarantine attribute. It does not
-turn off Gatekeeper for other applications.
-
 ## Repository layout
 
 ```text
@@ -116,6 +144,7 @@ src-tauri/assets/           Runtime CIA template assets
 src-tauri/capabilities/     Tauri permissions
 src-tauri/icons/            Application icons used for bundling
 public/                     Frontend static assets
+docs/screenshots/           README screenshots (not bundled with the app)
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for module responsibilities and the
