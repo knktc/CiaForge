@@ -1,1 +1,3 @@
-fn main() { ciaforge_lib::run(); }
+fn main() {
+    ciaforge_lib::run();
+}

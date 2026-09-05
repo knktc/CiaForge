@@ -5,10 +5,17 @@ use super::ConversionError;
 const MEDIA_UNIT: u64 = 0x200;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EncryptionMode { Unencrypted, ZeroKey, OriginalNcch }
+pub enum EncryptionMode {
+    Unencrypted,
+    ZeroKey,
+    OriginalNcch,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Partition { pub offset: u64, pub size: u64 }
+pub struct Partition {
+    pub offset: u64,
+    pub size: u64,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CciHeader {
@@ -20,11 +27,20 @@ pub struct CciHeader {
 }
 
 impl CciHeader {
-    pub fn parse<R: Read + Seek>(reader: &mut R, path: &str, file_len: u64) -> Result<Self, ConversionError> {
+    pub fn parse<R: Read + Seek>(
+        reader: &mut R,
+        path: &str,
+        file_len: u64,
+    ) -> Result<Self, ConversionError> {
         let mut magic = [0; 4];
         seek(reader, 0x100, path)?;
         read(reader, &mut magic, path)?;
-        if &magic != b"NCSD" { return Err(ConversionError::InvalidMagic { path: path.into(), expected: "NCSD" }); }
+        if &magic != b"NCSD" {
+            return Err(ConversionError::InvalidMagic {
+                path: path.into(),
+                expected: "NCSD",
+            });
+        }
         seek(reader, 0x108, path)?;
         let mut title = [0; 8];
         read(reader, &mut title, path)?;
@@ -32,32 +48,78 @@ impl CciHeader {
         // canonical big-endian representation when it is written back out.
         let title_id = u64::from_le_bytes(title);
         seek(reader, 0x120, path)?;
-        let game = partition(reader, path, "game", file_len, true)?.ok_or_else(|| ConversionError::MissingGamePartition { path: path.into() })?;
+        let game = partition(reader, path, "game", file_len, true)?
+            .ok_or_else(|| ConversionError::MissingGamePartition { path: path.into() })?;
         let manual = partition(reader, path, "manual", file_len, false)?;
         let download_play_child = partition(reader, path, "Download Play child", file_len, false)?;
         seek(reader, game.offset + 0x100, path)?;
         read(reader, &mut magic, path)?;
-        if &magic != b"NCCH" { return Err(ConversionError::InvalidMagic { path: path.into(), expected: "NCCH" }); }
+        if &magic != b"NCCH" {
+            return Err(ConversionError::InvalidMagic {
+                path: path.into(),
+                expected: "NCCH",
+            });
+        }
         let mut flag = [0; 1];
         seek(reader, game.offset + 0x18f, path)?;
         read(reader, &mut flag, path)?;
-        let encryption = if flag[0] & 0x04 != 0 { EncryptionMode::Unencrypted } else if flag[0] & 0x01 != 0 { EncryptionMode::ZeroKey } else { EncryptionMode::OriginalNcch };
-        Ok(Self { title_id, game, manual, download_play_child, encryption })
+        let encryption = if flag[0] & 0x04 != 0 {
+            EncryptionMode::Unencrypted
+        } else if flag[0] & 0x01 != 0 {
+            EncryptionMode::ZeroKey
+        } else {
+            EncryptionMode::OriginalNcch
+        };
+        Ok(Self {
+            title_id,
+            game,
+            manual,
+            download_play_child,
+            encryption,
+        })
     }
 }
 
-fn partition<R: Read>(reader: &mut R, path: &str, name: &'static str, file_len: u64, required: bool) -> Result<Option<Partition>, ConversionError> {
+fn partition<R: Read>(
+    reader: &mut R,
+    path: &str,
+    name: &'static str,
+    file_len: u64,
+    required: bool,
+) -> Result<Option<Partition>, ConversionError> {
     let mut entry = [0; 8];
     read(reader, &mut entry, path)?;
     let offset = u32::from_le_bytes(entry[..4].try_into().unwrap()) as u64 * MEDIA_UNIT;
     let size = u32::from_le_bytes(entry[4..].try_into().unwrap()) as u64 * MEDIA_UNIT;
-    if !required && offset == 0 && size == 0 { return Ok(None); }
-    if offset == 0 || size < 0x200 || offset.checked_add(size).is_none_or(|end| end > file_len) { return Err(ConversionError::InvalidPartition { path: path.into(), name }); }
+    if !required && offset == 0 && size == 0 {
+        return Ok(None);
+    }
+    if offset == 0 || size < 0x200 || offset.checked_add(size).is_none_or(|end| end > file_len) {
+        return Err(ConversionError::InvalidPartition {
+            path: path.into(),
+            name,
+        });
+    }
     Ok(Some(Partition { offset, size }))
 }
 
-fn seek<R: Seek>(reader: &mut R, offset: u64, path: &str) -> Result<(), ConversionError> { reader.seek(SeekFrom::Start(offset)).map(|_| ()).map_err(|source| ConversionError::Io { path: path.into(), source }) }
-fn read<R: Read>(reader: &mut R, buffer: &mut [u8], path: &str) -> Result<(), ConversionError> { reader.read_exact(buffer).map_err(|source| ConversionError::Io { path: path.into(), source }) }
+fn seek<R: Seek>(reader: &mut R, offset: u64, path: &str) -> Result<(), ConversionError> {
+    reader
+        .seek(SeekFrom::Start(offset))
+        .map(|_| ())
+        .map_err(|source| ConversionError::Io {
+            path: path.into(),
+            source,
+        })
+}
+fn read<R: Read>(reader: &mut R, buffer: &mut [u8], path: &str) -> Result<(), ConversionError> {
+    reader
+        .read_exact(buffer)
+        .map_err(|source| ConversionError::Io {
+            path: path.into(),
+            source,
+        })
+}
 
 #[cfg(test)]
 mod tests {
@@ -77,14 +139,27 @@ mod tests {
     #[test]
     fn parses_an_unencrypted_game_partition() {
         let data = fixture(0x04);
-        let parsed = CciHeader::parse(&mut Cursor::new(&data), "fixture.3ds", data.len() as u64).unwrap();
+        let parsed =
+            CciHeader::parse(&mut Cursor::new(&data), "fixture.3ds", data.len() as u64).unwrap();
         assert_eq!(parsed.title_id, 0x1122334455667788);
-        assert_eq!(parsed.game, Partition { offset: 0x400, size: 0xc00 });
+        assert_eq!(
+            parsed.game,
+            Partition {
+                offset: 0x400,
+                size: 0xc00
+            }
+        );
         assert_eq!(parsed.encryption, EncryptionMode::Unencrypted);
     }
     #[test]
     fn rejects_a_missing_ncsd_magic() {
         let data = vec![0; 0x1000];
-        assert!(matches!(CciHeader::parse(&mut Cursor::new(&data), "broken.3ds", data.len() as u64), Err(ConversionError::InvalidMagic { expected: "NCSD", .. })));
+        assert!(matches!(
+            CciHeader::parse(&mut Cursor::new(&data), "broken.3ds", data.len() as u64),
+            Err(ConversionError::InvalidMagic {
+                expected: "NCSD",
+                ..
+            })
+        ));
     }
 }
