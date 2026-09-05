@@ -19,7 +19,6 @@ jobs:
     name: Build macOS installers
     runs-on: macos-latest
     env:
-      CI: "true"
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
