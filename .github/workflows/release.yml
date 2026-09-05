@@ -19,6 +19,7 @@ jobs:
     name: Build macOS installers
     runs-on: macos-latest
     env:
+      CI: "true"
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
@@ -32,11 +33,11 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: cargo test --manifest-path src-tauri/Cargo.toml
-      - name: Build macOS applications
+      - name: Build macOS disk images
         run: |
-          npm run tauri -- build --target aarch64-apple-darwin --bundles app
-          npm run tauri -- build --target x86_64-apple-darwin --bundles app
-      - name: Create macOS disk images
+          npm run tauri -- build --target aarch64-apple-darwin --bundles dmg --verbose
+          npm run tauri -- build --target x86_64-apple-darwin --bundles dmg --verbose
+      - name: Name macOS disk images
         shell: bash
         run: |
           version="${RELEASE_TAG#v}"
@@ -46,12 +47,9 @@ jobs:
               arm64) target="aarch64-apple-darwin" ;;
               x64) target="x86_64-apple-darwin" ;;
             esac
-            hdiutil create \
-              -volname "CiaForge" \
-              -srcfolder "src-tauri/target/${target}/release/bundle/macos/CiaForge.app" \
-              -ov \
-              -format UDZO \
-              "release-assets/CiaForge-v${version}-macos-${architecture}.dmg"
+            installer="$(find "src-tauri/target/${target}/release/bundle/dmg" -name '*.dmg' -type f -print -quit)"
+            test -n "$installer"
+            mv "$installer" "release-assets/CiaForge-v${version}-macos-${architecture}.dmg"
           done
       - uses: actions/upload-artifact@v4
         with:
