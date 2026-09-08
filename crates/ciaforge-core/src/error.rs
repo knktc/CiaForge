@@ -32,3 +32,12 @@ pub enum ConversionError {
     #[error("{path} already exists; CiaForge will not overwrite it")]
     AlreadyExists { path: String },
 }
+
+impl ConversionError {
+    pub fn io(path: impl std::fmt::Display, source: io::Error) -> Self {
+        Self::Io {
+            path: path.to_string(),
+            source,
+        }
+    }
+}

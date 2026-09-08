@@ -24,8 +24,8 @@ const outputPath = document.querySelector<HTMLInputElement>('#output-path')!;
 const chooseFolder = document.querySelector<HTMLButtonElement>('#choose-folder')!;
 const settingsDialog = document.querySelector<HTMLDialogElement>('#settings-dialog')!;
 const languageInput = document.querySelector<HTMLSelectElement>('#language')!;
-const browserFileInput = document.querySelector<HTMLInputElement>('#browser-file-input')!;
-const isTauri = '__TAURI_INTERNALS__' in window;
+const addMore = document.querySelector<HTMLButtonElement>('#add-more')!;
+const clearBatch = document.querySelector<HTMLButtonElement>('#clear-batch')!;
 const defaultSettings: Settings = { language: 'en', outputMode: 'source', outputPath: '' };
 const translations = {
   en: {
@@ -112,7 +112,6 @@ function localizedDetail(job: Job) {
 }
 
 async function readFileSizes(paths: string[]) {
-  if (!isTauri) return new Map<string, number>();
   try {
     const sizes = await invoke<FileSize[]>('file_sizes', { paths });
     return new Map(sizes.map(({ path, size }) => [path, size]));
@@ -150,7 +149,6 @@ async function startConversion() {
   }
 }
 async function chooseFiles() {
-  if (!isTauri) { browserFileInput.click(); return; }
   const selected = await open({ multiple: true, filters: [{ name: 'Nintendo 3DS images', extensions: ['cci', '3ds'] }] });
   if (selected) await addPaths(Array.isArray(selected) ? selected : [selected]);
 }
@@ -163,7 +161,6 @@ async function chooseOutputFolder() {
   }
 }
 async function syncWindowHeight(hasJobs: boolean) {
-  if (!isTauri) return;
   // The queue itself stops growing at 480px and scrolls after that. Size the
   // native window from that capped queue height so the footer is always fully
   // visible, without leaving a large blank area below it.
@@ -184,7 +181,7 @@ function updateFolderPicker() {
 }
 function persistSettings() { localStorage.setItem('ciaforge.settings', JSON.stringify(settings)); }
 async function openExternalUrl(url: string) {
-  if (isTauri) { await openUrl(url); return; }
+  await openUrl(url);
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 async function setOutputMode(mode: Settings['outputMode']) {
@@ -219,11 +216,6 @@ dropZone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || e
 document.querySelector('#add-more')!.addEventListener('click', chooseFiles);
 document.querySelector('#clear-batch')!.addEventListener('click', () => { jobs.splice(0); render(); });
 chooseFolder.addEventListener('click', chooseOutputFolder);
-browserFileInput.addEventListener('change', () => {
-  const files = Array.from(browserFileInput.files ?? []);
-  if (files.length) void addPaths(files.map((file) => `/Browser preview/${file.name}`), new Map(files.map((file) => [`/Browser preview/${file.name}`, file.size])));
-  browserFileInput.value = '';
-});
 document.querySelector('#open-settings')!.addEventListener('click', () => { updateSettingsForm(); settingsDialog.showModal(); void syncWindowHeight(jobs.length > 0); });
 document.querySelector('#close-settings')!.addEventListener('click', () => settingsDialog.close());
 settingsDialog.addEventListener('close', () => { void syncWindowHeight(jobs.length > 0); });
@@ -232,5 +224,5 @@ document.querySelectorAll<HTMLInputElement>('input[name="output"]').forEach((inp
 document.querySelector('#about-email')!.addEventListener('click', () => { void openExternalUrl('mailto:me@knktc.com'); });
 document.querySelector('#about-website')!.addEventListener('click', () => { void openExternalUrl('https://knktc.com'); });
 convert.addEventListener('click', startConversion);
-if (isTauri) getCurrentWebviewWindow().onDragDropEvent((event) => { if (event.payload.type === 'drop') void addPaths(event.payload.paths); });
+getCurrentWebviewWindow().onDragDropEvent((event) => { if (event.payload.type === 'drop') void addPaths(event.payload.paths); });
 applyTranslations();

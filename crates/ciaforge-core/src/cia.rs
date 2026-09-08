@@ -70,7 +70,7 @@ impl CiaPlan {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::conversion::{CciHeader, cci::EncryptionMode};
+    use crate::{CciHeader, cci::EncryptionMode};
 
     fn header(manual: bool, dlp: bool) -> CciHeader {
         CciHeader {

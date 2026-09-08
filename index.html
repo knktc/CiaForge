@@ -7,9 +7,9 @@
   </head>
   <body>
     <main class="app-shell">
-      <header><div class="brand"><img class="mark" src="/icon.png" alt="" /><h1>CiaForge</h1></div><button id="open-settings" class="icon-button" type="button" aria-label="Open settings"><i class="ph ph-gear-six" aria-hidden="true"></i></button></header>
+      <header><div class="brand"><img class="mark" src="/icon.png" width="27" height="27" style="width:27px;height:27px;visibility:hidden" onload="this.style.visibility='visible'" alt="" /><h1>CiaForge</h1></div><button id="open-settings" class="icon-button" type="button" aria-label="Open settings"><i class="ph ph-gear-six" aria-hidden="true"></i></button></header>
       <section id="drop-zone" class="drop-zone" aria-label="Add CCI or 3DS files" tabindex="0">
-        <img class="drop-mark" src="/icon.png" alt="" />
+        <img class="drop-mark" src="/icon.png" width="58" height="58" style="width:58px;height:58px;visibility:hidden" onload="this.style.visibility='visible'" alt="" />
         <strong>Drop .cci or .3ds files here</strong>
         <small id="drop-hint">or click anywhere to browse</small>
       </section>
@@ -28,7 +28,7 @@
         <section class="settings-section about-section" aria-labelledby="about-title"><h3 id="about-title">About</h3><div class="about-row"><span id="about-email-label">Email</span><button id="about-email" class="about-link" type="button">me@knktc.com</button></div><div class="about-row"><span id="about-website-label">Website</span><button id="about-website" class="about-link" type="button">knktc.com</button></div></section>
       </form>
     </dialog>
-    <input id="browser-file-input" type="file" accept=".cci,.3ds" multiple hidden />
-    <script type="module" src="/src/main.ts"></script>
+    <input id="browser-file-input" type="file" accept=".cci,.3ds" hidden />
+    <script type="module" src="/src/desktop/main.ts"></script>
   </body>
 </html>

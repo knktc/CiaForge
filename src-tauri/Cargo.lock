@@ -469,14 +469,21 @@ dependencies = [
 name = "ciaforge"
 version = "0.2.2"
 dependencies = [
- "base64 0.22.1",
- "flate2",
+ "ciaforge-core",
  "serde",
- "sha2",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-opener",
+]
+
+[[package]]
+name = "ciaforge-core"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "flate2",
+ "sha2",
  "thiserror 2.0.20",
 ]
 

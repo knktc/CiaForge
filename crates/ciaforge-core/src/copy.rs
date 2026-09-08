@@ -1,16 +1,21 @@
+#[cfg(test)]
 use std::io::{Read, Seek, SeekFrom, Write};
 
+#[cfg(test)]
 use sha2::{Digest, Sha256};
 
+#[cfg(test)]
 use super::{ConversionError, cci::Partition};
 
+#[cfg(test)]
 const BUFFER_SIZE: usize = 1024 * 1024;
 
 pub trait ProgressSink {
     fn report(&mut self, completed: u64, total: u64);
 }
 
-pub fn copy_partition<R: Read + Seek, W: Write, P: ProgressSink>(
+#[cfg(test)]
+fn copy_partition<R: Read + Seek, W: Write, P: ProgressSink>(
     reader: &mut R,
     writer: &mut W,
     partition: Partition,
