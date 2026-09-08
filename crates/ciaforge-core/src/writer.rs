@@ -45,7 +45,7 @@ impl CiaHeader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::conversion::{
+    use crate::{
         CciHeader, CiaPlan,
         cci::{EncryptionMode, Partition},
     };

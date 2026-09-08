@@ -1,0 +1,11 @@
+[package]
+name = "ciaforge-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+base64 = "0.22"
+flate2 = "1"
+sha2 = "0.10"
+thiserror = "2"

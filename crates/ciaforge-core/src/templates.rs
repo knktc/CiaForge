@@ -10,8 +10,8 @@ use super::{
 
 const TICKET_AND_TMD_TEMPLATE_SIZE: usize = 0x518;
 
-const CERT_CHAIN: &str = include_str!("../../assets/retail_certchain.zlib.b64");
-const TICKET_TMD: &str = include_str!("../../assets/retail_ticket_tmd.zlib.b64");
+const CERT_CHAIN: &str = include_str!("../../../src-tauri/assets/retail_certchain.zlib.b64");
+const TICKET_TMD: &str = include_str!("../../../src-tauri/assets/retail_ticket_tmd.zlib.b64");
 
 pub struct RetailTemplates {
     pub certificate_chain: Vec<u8>,

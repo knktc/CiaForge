@@ -1,6 +1,7 @@
-pub mod conversion;
+mod native_conversion;
 
-use conversion::{ProgressSink, convert_unencrypted};
+use ciaforge_core::ProgressSink;
+use native_conversion::convert_file;
 use serde::Serialize;
 use std::path::{Path, PathBuf};
 use tauri::ipc::Channel;
@@ -51,7 +52,7 @@ async fn start_conversion(
             channel: channel.clone(),
             path: path.clone(),
         };
-        match convert_unencrypted(Path::new(&path), &output, &mut progress) {
+        match convert_file(Path::new(&path), &output, &mut progress) {
             Ok(()) => channel.send(ProgressEvent {
                 path: path.clone(),
                 state: "completed".into(),
